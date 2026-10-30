@@ -83,7 +83,7 @@ export interface Settings {
   echoCancellation: boolean
   noiseSuppression: boolean
   autoGainControl: boolean
-  padSize: 'sm' | 'md' | 'lg'
+  padSize: 'sm' | 'md' | 'lg' | 'xl'
   mixerOpen: boolean
   sidebarOpen: boolean
   onboarded: boolean

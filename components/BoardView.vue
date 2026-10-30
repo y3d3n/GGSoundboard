@@ -14,7 +14,7 @@ const title = computed(() => activeCollectionObj.value?.name ?? 'All sounds')
 const activeIcon = computed(() => activeCollectionObj.value?.icon ?? null)
 const activeColorHex = computed(() => resolveColorHex(activeCollectionObj.value?.color))
 const anyPlaying = computed(() => Object.keys(playing.value).length > 0 || Object.keys(previewing.value).length > 0)
-const minWidth = computed(() => ({ sm: 140, md: 172, lg: 210 })[state.settings.padSize])
+const minWidth = computed(() => ({ sm: 165, md: 216, lg: 270, xl: 330 })[state.settings.padSize])
 
 function pick() {
   fileInput.value?.click()
@@ -78,7 +78,7 @@ defineExpose({ pick })
 
       <div class="no-drag flex h-[30px] items-center rounded-lg border border-white/[0.08] bg-white/[0.03] p-0.5">
         <button
-          v-for="sz in (['sm', 'md', 'lg'] as const)"
+          v-for="sz in (['sm', 'md', 'lg', 'xl'] as const)"
           :key="sz"
           class="h-full rounded-md px-2 text-[11px] font-medium uppercase transition-colors"
           :class="state.settings.padSize === sz ? 'bg-white/[0.09] text-ink-100' : 'text-ink-500 hover:text-ink-200'"
@@ -125,7 +125,7 @@ defineExpose({ pick })
         />
         <button
           class="flex flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed border-white/[0.08] text-[12px] text-ink-500 transition-colors hover:border-white/[0.16] hover:text-ink-300"
-          :class="state.settings.padSize === 'sm' ? 'h-[88px]' : state.settings.padSize === 'lg' ? 'h-[148px]' : 'h-[116px]'"
+          :class="state.settings.padSize === 'sm' ? 'h-[106px]' : state.settings.padSize === 'md' ? 'h-[138px]' : state.settings.padSize === 'lg' ? 'h-[172px]' : 'h-[210px]'"
           @click="pick"
         >
           <Plus :size="16" />

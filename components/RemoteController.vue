@@ -393,7 +393,7 @@ onBeforeUnmount(() => {
           <div
             v-for="sound in visibleSounds"
             :key="sound.id"
-            class="group relative flex h-[104px] cursor-pointer flex-col justify-between overflow-hidden rounded-xl border p-3 text-left transition-[transform,box-shadow,filter] active:scale-[0.96]"
+            class="group relative flex h-[118px] cursor-pointer flex-col justify-between overflow-hidden rounded-xl border p-3.5 text-left transition-[transform,box-shadow,filter] active:scale-[0.96]"
             :style="(() => {
               const theme = computePadTheme(sound.color)
               const isPlaying = !!playingState[sound.id]

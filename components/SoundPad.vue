@@ -4,7 +4,7 @@ import type { Sound } from '~/lib/types'
 import type { PlayingInfo } from '~/composables/useSoundboard'
 import { computePadTheme } from '~/lib/colors'
 
-const props = defineProps<{ sound: Sound; playing?: PlayingInfo; previewing?: PlayingInfo; size: 'sm' | 'md' | 'lg' }>()
+const props = defineProps<{ sound: Sound; playing?: PlayingInfo; previewing?: PlayingInfo; size: 'sm' | 'md' | 'lg' | 'xl' }>()
 const sb = useSoundboard()
 const { ui } = useUi()
 
@@ -81,9 +81,9 @@ function onDrop(e: DragEvent) {
     role="button"
     tabindex="0"
     draggable="true"
-    class="group relative flex cursor-pointer flex-col justify-between overflow-hidden rounded-xl border p-3 text-left outline-none transition-[background-color,border-color,transform,box-shadow,filter] duration-150 active:scale-[0.97]"
+    class="group relative flex cursor-pointer flex-col justify-between overflow-hidden rounded-xl border text-left outline-none transition-[background-color,border-color,transform,box-shadow,filter] duration-150 active:scale-[0.97]"
     :class="[
-      size === 'sm' ? 'h-[88px]' : size === 'lg' ? 'h-[148px]' : 'h-[116px]',
+      size === 'sm' ? 'h-[106px] p-3' : size === 'md' ? 'h-[138px] p-3.5' : size === 'lg' ? 'h-[172px] p-4' : 'h-[210px] p-5',
       playing && !theme
         ? 'border-accent/45 bg-accent/[0.08]'
         : !theme && 'border-white/[0.06] bg-white/[0.025] hover:border-white/[0.1] hover:bg-white/[0.045]',
@@ -113,25 +113,29 @@ function onDrop(e: DragEvent) {
         :style="theme ? { color: theme.iconColor } : {}"
         :class="playing && !theme && '!text-accent'"
       >
-        <span v-if="playing" class="flex h-3.5 items-end gap-[2px]">
+        <span v-if="playing" class="flex items-end gap-[2.5px]" :class="size === 'xl' ? 'h-5' : size === 'lg' ? 'h-4.5' : 'h-4'">
           <span
             v-for="i in 4"
             :key="i"
-            class="w-[2.5px] origin-bottom animate-eq rounded-full bg-current"
+            class="origin-bottom animate-eq rounded-full bg-current"
+            :class="size === 'xl' || size === 'lg' ? 'w-[3px]' : 'w-[2.5px]'"
             :style="{ height: '100%', animationDelay: `${i * -0.17}s`, animationDuration: `${0.7 + i * 0.13}s` }"
           />
         </span>
-        <TriangleAlert v-else-if="failed" :size="15" class="text-amber-300" />
-        <PadIcon v-else :name="sound.icon" :size="size === 'sm' ? 15 : 17" />
+        <TriangleAlert v-else-if="failed" :size="size === 'sm' ? 15 : size === 'md' ? 18 : 22" class="text-amber-300" />
+        <PadIcon v-else :name="sound.icon" :size="size === 'sm' ? 16 : size === 'md' ? 19 : size === 'lg' ? 23 : 26" />
       </div>
       <div class="flex items-center gap-1">
         <button
-          class="-my-1 flex h-6 w-6 items-center justify-center rounded-md opacity-0 transition-opacity group-hover:opacity-100"
-          :class="theme ? (theme.isLight ? 'text-black/60 hover:bg-black/10 hover:text-black' : 'text-white/70 hover:bg-white/15 hover:text-white') : 'text-ink-400 hover:bg-white/[0.08] hover:text-ink-100'"
+          class="-my-1 flex items-center justify-center rounded-md opacity-0 transition-opacity group-hover:opacity-100"
+          :class="[
+            size === 'xl' || size === 'lg' ? 'h-7 w-7' : 'h-6 w-6',
+            theme ? (theme.isLight ? 'text-black/60 hover:bg-black/10 hover:text-black' : 'text-white/70 hover:bg-white/15 hover:text-white') : 'text-ink-400 hover:bg-white/[0.08] hover:text-ink-100',
+          ]"
           title="Edit"
           @click="edit"
         >
-          <Ellipsis :size="14" />
+          <Ellipsis :size="size === 'xl' || size === 'lg' ? 16 : 14" />
         </button>
         <UiKbd :combo="sound.hotkey" :theme="theme?.kbd" />
       </div>
@@ -142,7 +146,7 @@ function onDrop(e: DragEvent) {
         class="line-clamp-2 font-medium leading-[1.3] tracking-[-0.005em]"
         :class="!theme && 'text-ink-100'"
         :style="{
-          fontSize: size === 'sm' ? '12.5px' : '13.5px',
+          fontSize: size === 'sm' ? '13px' : size === 'md' ? '14px' : size === 'lg' ? '15.5px' : '17px',
           color: theme ? theme.textColor : undefined,
           textShadow: theme && !theme.isLight ? '0 1px 2px rgba(0,0,0,0.3)' : undefined,
         }"
@@ -151,14 +155,17 @@ function onDrop(e: DragEvent) {
       </p>
       <div
         v-if="size !== 'sm'"
-        class="mt-1 flex items-center gap-1.5 text-[11px]"
-        :class="!theme && 'text-ink-500'"
+        class="flex items-center gap-1.5"
+        :class="[
+          size === 'xl' ? 'mt-2 text-[12.5px]' : size === 'lg' ? 'mt-1.5 text-[12px]' : 'mt-1 text-[11px]',
+          !theme && 'text-ink-500',
+        ]"
         :style="{ color: theme ? theme.subTextColor : undefined }"
       >
         <span class="font-mono tabular-nums">{{ fmt(sound.duration) }}</span>
-        <Repeat v-if="sound.loop" :size="11" />
+        <Repeat v-if="sound.loop" :size="size === 'xl' ? 13 : 11" />
         <span v-if="Math.round(sound.volume * 100) !== 100" class="font-mono tabular-nums">· {{ Math.round(sound.volume * 100) }}%</span>
-        <Headphones v-if="previewing" :size="11" />
+        <Headphones v-if="previewing" :size="size === 'xl' ? 13 : 11" />
       </div>
     </div>
 
