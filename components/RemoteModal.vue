@@ -102,7 +102,7 @@ function fmtTimeAgo(ts: number) {
             <div class="flex w-full items-center gap-1.5">
               <button
                 type="button"
-                class="group relative flex flex-1 items-center justify-between truncate rounded-lg border px-2.5 py-1.5 font-mono text-[11px] transition-all cursor-pointer text-left"
+                class="flex flex-1 items-center justify-between truncate rounded-lg border px-2.5 py-1.5 font-mono text-[11px] transition-all cursor-pointer text-left"
                 :class="copied
                   ? 'border-emerald-500/40 bg-emerald-500/15 text-emerald-300'
                   : 'border-white/[0.08] bg-white/[0.04] text-ink-200 hover:border-white/20 hover:bg-white/[0.07] hover:text-ink-100'"
@@ -112,10 +112,7 @@ function fmtTimeAgo(ts: number) {
                 <span class="truncate">
                   {{ copied ? 'Copied!' : halfUrl }}
                 </span>
-                <span class="ml-1.5 shrink-0 text-2xs text-ink-500 group-hover:text-ink-300">
-                  <Check v-if="copied" :size="12" class="text-emerald-400" />
-                  <span v-else class="text-[10px] font-sans uppercase tracking-wider text-ink-400 group-hover:text-ink-200">Copy</span>
-                </span>
+                <Check v-if="copied" :size="12" class="shrink-0 text-emerald-400" />
               </button>
               <button class="btn-outline h-7 px-2 text-ink-400 hover:text-ink-100" title="Open in browser" @click="openUrl">
                 <ExternalLink :size="13" />
