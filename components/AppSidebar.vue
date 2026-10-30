@@ -9,7 +9,6 @@ import {
   BookOpen,
   Smartphone,
   Info,
-  PanelLeftClose,
   Palette,
   Check,
   X,
@@ -152,16 +151,8 @@ function onDrop(e: DragEvent, id: string) {
 
 <template>
   <nav class="flex h-full w-[220px] shrink-0 flex-col border-r border-white/[0.06] bg-ink-900/60 select-none">
-    <div class="drag flex h-[52px] shrink-0 items-center justify-between pr-2" :class="isMac ? 'pl-[84px]' : 'pl-4'">
+    <div class="drag flex h-[52px] shrink-0 items-center pr-4" :class="isMac ? 'pl-[84px]' : 'pl-4'">
       <span class="text-[13px] font-semibold tracking-tight text-ink-100">GGSoundboard</span>
-      <button
-        type="button"
-        class="no-drag icon-btn h-7 w-7 text-ink-400 hover:text-ink-100"
-        title="Hide sidebar (⌘B)"
-        @click="state.settings.sidebarOpen = false"
-      >
-        <PanelLeftClose :size="15" />
-      </button>
     </div>
 
     <div class="flex-1 overflow-y-auto px-2.5 pb-3">
