@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Cast, Check, Copy, ExternalLink, RefreshCw, Smartphone, Tablet, Monitor, Shield, Trash2, Wifi, WifiOff } from 'lucide-vue-next'
+import { Cast, Check, ExternalLink, RefreshCw, Smartphone, Tablet, Monitor, Shield, Trash2, Wifi, WifiOff } from 'lucide-vue-next'
 import type { ConnectedDevice } from '~/lib/types'
 
 const sb = useSoundboard()
@@ -100,17 +100,24 @@ function fmtTimeAgo(ts: number) {
               </div>
             </div>
             <div class="flex w-full items-center gap-1.5">
-              <code
-                class="flex-1 truncate rounded-lg bg-white/[0.04] px-2.5 py-1.5 font-mono text-[11px] text-ink-200"
-                :title="`Full URL: ${state.remoteUrl}`"
+              <button
+                type="button"
+                class="group relative flex flex-1 items-center justify-between truncate rounded-lg border px-2.5 py-1.5 font-mono text-[11px] transition-all cursor-pointer text-left"
+                :class="copied
+                  ? 'border-emerald-500/40 bg-emerald-500/15 text-emerald-300'
+                  : 'border-white/[0.08] bg-white/[0.04] text-ink-200 hover:border-white/20 hover:bg-white/[0.07] hover:text-ink-100'"
+                :title="copied ? 'Copied to clipboard!' : `Click to copy: ${state.remoteUrl}`"
+                @click="copyUrl"
               >
-                {{ halfUrl }}
-              </code>
-              <button class="btn-outline h-7 px-2" title="Copy full URL" @click="copyUrl">
-                <Check v-if="copied" :size="13" class="text-emerald-400" />
-                <Copy v-else :size="13" />
+                <span class="truncate">
+                  {{ copied ? 'Copied!' : halfUrl }}
+                </span>
+                <span class="ml-1.5 shrink-0 text-2xs text-ink-500 group-hover:text-ink-300">
+                  <Check v-if="copied" :size="12" class="text-emerald-400" />
+                  <span v-else class="text-[10px] font-sans uppercase tracking-wider text-ink-400 group-hover:text-ink-200">Copy</span>
+                </span>
               </button>
-              <button class="btn-outline h-7 px-2" title="Open full URL in browser" @click="openUrl">
+              <button class="btn-outline h-7 px-2 text-ink-400 hover:text-ink-100" title="Open in browser" @click="openUrl">
                 <ExternalLink :size="13" />
               </button>
             </div>
