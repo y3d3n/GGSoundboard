@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import { Search, Upload, Square, PanelRight, Plus, AudioLines } from 'lucide-vue-next'
+import { Search, Upload, Square, PanelRight, PanelLeft, Plus, AudioLines, Folder, LayoutGrid } from 'lucide-vue-next'
 
 const sb = useSoundboard()
 const { state, visibleSounds, playing, previewing } = sb
+const isMac = sb.platform === 'mac' && !!sb.native
 const fileInput = ref<HTMLInputElement | null>(null)
 
-const title = computed(() =>
-  state.activeCollection === 'all' ? 'All sounds' : state.collections.find((c) => c.id === state.activeCollection)?.name ?? 'Sounds',
+const activeCollectionObj = computed(() =>
+  state.activeCollection === 'all' ? null : state.collections.find((c) => c.id === state.activeCollection),
 )
+const title = computed(() => activeCollectionObj.value?.name ?? 'All sounds')
+const activeIcon = computed(() => activeCollectionObj.value?.icon ?? null)
 const anyPlaying = computed(() => Object.keys(playing.value).length > 0 || Object.keys(previewing.value).length > 0)
 const minWidth = computed(() => ({ sm: 140, md: 172, lg: 210 })[state.settings.padSize])
 
@@ -25,8 +28,25 @@ defineExpose({ pick })
 <template>
   <main class="flex min-w-0 flex-1 flex-col">
     <!-- Toolbar -->
-    <header class="drag flex h-[52px] shrink-0 items-center gap-3 border-b border-white/[0.06] px-5">
-      <h1 class="min-w-0 truncate text-[13.5px] font-semibold tracking-tight text-ink-100">{{ title }}</h1>
+    <header
+      class="drag flex h-[52px] shrink-0 items-center gap-3 border-b border-white/[0.06]"
+      :class="[!state.settings.sidebarOpen && isMac ? 'pl-[84px] pr-5' : 'px-5']"
+    >
+      <button
+        class="no-drag icon-btn h-[30px] w-[30px] -ml-1 text-ink-400 hover:text-ink-100"
+        :class="!state.settings.sidebarOpen ? 'bg-white/[0.08] text-ink-100' : ''"
+        :title="state.settings.sidebarOpen ? 'Hide sidebar (⌘B)' : 'Show sidebar (⌘B)'"
+        @click="state.settings.sidebarOpen = !state.settings.sidebarOpen"
+      >
+        <PanelLeft :size="15" />
+      </button>
+
+      <div class="flex items-center gap-2 min-w-0">
+        <PadIcon v-if="activeIcon" :name="activeIcon" :size="15" class="shrink-0 text-accent" />
+        <Folder v-else-if="state.activeCollection !== 'all'" :size="15" class="shrink-0 text-ink-400" />
+        <LayoutGrid v-else :size="15" class="shrink-0 text-ink-400" />
+        <h1 class="min-w-0 truncate text-[13.5px] font-semibold tracking-tight text-ink-100">{{ title }}</h1>
+      </div>
       <span class="font-mono text-[11px] tabular-nums text-ink-500">{{ visibleSounds.length }}</span>
 
       <div class="no-drag relative ml-auto w-[240px]">

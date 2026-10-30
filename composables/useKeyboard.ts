@@ -57,6 +57,12 @@ export function useKeyboard() {
       e.preventDefault()
       return
     }
+    // ⌘/Ctrl+B toggles sidebar.
+    if ((e.metaKey || e.ctrlKey) && e.code === 'KeyB') {
+      s.settings.sidebarOpen = !s.settings.sidebarOpen
+      e.preventDefault()
+      return
+    }
     const combo = eventToCombo(e)
     if (!combo) return
 

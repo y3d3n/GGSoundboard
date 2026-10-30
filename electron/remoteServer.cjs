@@ -191,6 +191,7 @@ class RemoteServer {
     const sanitizedCollections = collections.map((c) => ({
       id: c.id,
       name: c.name,
+      icon: c.icon || null,
     }))
 
     this.lastSoundboardData = {

@@ -64,7 +64,7 @@ function revealLibrary() {
           <div class="flex items-center gap-2">
             <h1 class="text-[17px] font-semibold tracking-tight text-ink-100">GGSoundboard</h1>
             <span class="rounded-full border border-white/10 bg-white/[0.06] px-2 py-0.5 font-mono text-[11px] font-medium text-ink-300">
-              v1.0.0
+              v1.0.1
             </span>
             <span v-if="sb.native" class="rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-medium text-accent">
               Desktop Native

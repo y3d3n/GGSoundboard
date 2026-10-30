@@ -361,11 +361,12 @@ onBeforeUnmount(() => {
           <button
             v-for="c in collections"
             :key="c.id"
-            class="h-7 shrink-0 rounded-lg px-2.5 text-[12px] font-medium transition-colors"
+            class="flex items-center gap-1.5 h-7 shrink-0 rounded-lg px-2.5 text-[12px] font-medium transition-colors"
             :class="activeCollection === c.id ? 'bg-white/[0.1] text-ink-100 font-semibold' : 'text-ink-400 hover:bg-white/[0.04] hover:text-ink-200'"
             @click="activeCollection = c.id"
           >
-            {{ c.name }} ({{ collectionCounts[c.id] || 0 }})
+            <PadIcon v-if="c.icon" :name="c.icon" :size="12" class="text-accent shrink-0" />
+            <span>{{ c.name }} ({{ collectionCounts[c.id] || 0 }})</span>
           </button>
         </div>
       </div>

@@ -1,7 +1,7 @@
 {
   "name": "ggsoundboard",
   "productName": "GGSoundboard",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Yeden Sherpa",
   "private": true,
   "description": "GGSoundboard — Local virtual-microphone soundboard (Nuxt 3 + Web Audio + Electron)",

@@ -32,6 +32,7 @@ export interface RemoteSound {
 export interface RemoteCollection {
   id: string
   name: string
+  icon?: string | null
 }
 
 export interface ConnectedDevice {
@@ -56,6 +57,7 @@ export interface RemoteServerStatus {
 export interface Collection {
   id: string
   name: string
+  icon?: string | null
 }
 
 export interface Settings {
@@ -81,6 +83,7 @@ export interface Settings {
   autoGainControl: boolean
   padSize: 'sm' | 'md' | 'lg'
   mixerOpen: boolean
+  sidebarOpen: boolean
   onboarded: boolean
   remoteEnabled: boolean
   remotePort: number
@@ -118,6 +121,7 @@ export const DEFAULT_SETTINGS: Settings = {
   autoGainControl: false,
   padSize: 'md',
   mixerOpen: true,
+  sidebarOpen: true,
   onboarded: false,
   remoteEnabled: true,
   remotePort: 4567,

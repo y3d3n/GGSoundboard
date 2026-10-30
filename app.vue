@@ -50,6 +50,7 @@ onMounted(async () => {
         else if (action === 'settings') ui.settingsOpen = true
         else if (action === 'setup') ui.setupOpen = true
         else if (action === 'remote') ui.remoteOpen = true
+        else if (action === 'toggle-sidebar') state.settings.sidebarOpen = !state.settings.sidebarOpen
       })
     }
   }
@@ -69,7 +70,14 @@ onMounted(async () => {
     @dragover="onDragOver"
     @drop="onDrop"
   >
-    <AppSidebar />
+    <Transition
+      enter-active-class="transition-[margin,opacity] duration-200 ease-out"
+      enter-from-class="-ml-[220px] opacity-0"
+      leave-active-class="transition-[margin,opacity] duration-150 ease-in"
+      leave-to-class="-ml-[220px] opacity-0"
+    >
+      <AppSidebar v-if="state.settings.sidebarOpen" />
+    </Transition>
     <BoardView />
     <Transition
       enter-active-class="transition-[margin,opacity] duration-200 ease-out"

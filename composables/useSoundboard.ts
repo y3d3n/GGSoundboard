@@ -495,6 +495,7 @@ function syncRemoteSoundboard() {
     collections: state.collections.map((c) => ({
       id: c.id,
       name: c.name,
+      icon: c.icon || null,
     })),
   }
   native.syncRemoteSoundboard(data).catch(() => {})
@@ -692,14 +693,18 @@ function assignHotkey(combo: string | null, owner: { soundId?: string; role?: 'p
 
 // ───────────────────────── collections ─────────────────────────
 
-function createCollection(name: string) {
-  const c = { id: uid(), name: name.trim() || 'Untitled' }
+function createCollection(name: string, icon?: string | null) {
+  const c = { id: uid(), name: name.trim() || 'Untitled', icon: icon || null }
   state.collections.push(c)
   return c
 }
 function renameCollection(id: string, name: string) {
   const c = state.collections.find((x) => x.id === id)
   if (c && name.trim()) c.name = name.trim()
+}
+function updateCollection(id: string, patch: Partial<Omit<Collection, 'id'>>) {
+  const c = state.collections.find((x) => x.id === id)
+  if (c) Object.assign(c, patch)
 }
 function deleteCollection(id: string) {
   state.collections = state.collections.filter((c) => c.id !== id)
@@ -792,6 +797,7 @@ export function useSoundboard() {
     isGloballyHandled,
     createCollection,
     renameCollection,
+    updateCollection,
     deleteCollection,
     setPtt,
     syncRemoteStatus,
