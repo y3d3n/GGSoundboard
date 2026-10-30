@@ -1,0 +1,66 @@
+{
+  "name": "ggsoundboard",
+  "productName": "GGSoundboard",
+  "version": "1.0.0",
+  "author": "Yeden Sherpa",
+  "private": true,
+  "description": "GGSoundboard — Local virtual-microphone soundboard (Nuxt 3 + Web Audio + Electron)",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "dev": "concurrently -k -n nuxt,electron -c gray,cyan \"cross-env NUXT_TELEMETRY_DISABLED=1 nuxt dev --port 3456\" \"wait-on -d 1500 tcp:127.0.0.1:3456 && cross-env NUXT_DEV_URL=http://localhost:3456 electron .\"",
+    "dev:web": "cross-env NUXT_TELEMETRY_DISABLED=1 nuxt dev --port 3456",
+    "generate": "cross-env NUXT_TELEMETRY_DISABLED=1 nuxt generate",
+    "start": "npm run generate && electron .",
+    "dist": "npm run generate && electron-builder",
+    "typecheck": "cross-env NUXT_TELEMETRY_DISABLED=1 nuxt typecheck",
+    "postinstall": "cross-env NUXT_TELEMETRY_DISABLED=1 nuxt prepare && node scripts/patch-electron-plist.cjs"
+  },
+  "dependencies": {
+    "@types/qrcode": "^1.5.6",
+    "lucide-vue-next": "^1.0.0",
+    "nuxt": "^3.21.11",
+    "qrcode": "^1.5.4",
+    "socket.io": "^4.8.4",
+    "socket.io-client": "^4.8.4",
+    "vue": "^3.5.0"
+  },
+  "devDependencies": {
+    "@nuxtjs/tailwindcss": "^6.14.0",
+    "concurrently": "^10.0.6",
+    "cross-env": "^7.0.3",
+    "electron": "^45.1.0",
+    "electron-builder": "^26.18.0",
+    "wait-on": "^9.5.1"
+  },
+  "build": {
+    "appId": "dev.local.ggsoundboard",
+    "productName": "GGSoundboard",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "electron/**/*",
+      ".output/public/**/*",
+      "package.json"
+    ],
+    "mac": {
+      "category": "public.app-category.music",
+      "icon": "build/icon.icns",
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "extendInfo": {
+        "NSMicrophoneUsageDescription": "GGSoundboard mixes your microphone with sound effects and sends them to a virtual audio device."
+      }
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.ico"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "build/icon.png"
+    }
+  }
+}

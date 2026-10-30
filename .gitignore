@@ -1,0 +1,23 @@
+# Nuxt
+.nuxt
+.output
+dist
+.nitro
+
+# Node
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Electron builder release outputs
+release/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local env
+.env
+.env.*
+!.env.example
