@@ -6,6 +6,20 @@ It mixes your physical microphone with custom audio effects in real time and rou
 
 ---
 
+## 📥 Downloads & Releases
+
+Download the latest standalone installer for your platform from the [**GitHub Releases**](https://github.com/y3d3n/GGSoundboard/releases) page:
+
+| Operating System | Format | Direct Download |
+| :--- | :--- | :--- |
+| 🍏 **macOS** *(Apple Silicon & Intel)* | `.dmg` installer / `.zip` | [**Download for macOS**](https://github.com/y3d3n/GGSoundboard/releases/latest) |
+| 🪟 **Windows** *(Windows 10 / 11)* | `.exe` setup installer | [**Download for Windows**](https://github.com/y3d3n/GGSoundboard/releases/latest) |
+| 🐧 **Linux** *(Ubuntu, Debian, Fedora)* | `.AppImage` / `.deb` | [**Download for Linux**](https://github.com/y3d3n/GGSoundboard/releases/latest) |
+
+> 💡 **Tip:** You can also download the latest automated CI builds directly from the [GitHub Actions Artifacts](https://github.com/y3d3n/GGSoundboard/actions) tab.
+
+---
+
 ## 🎧 Architecture & Signal Flow
 
 ```
