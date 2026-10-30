@@ -192,6 +192,7 @@ class RemoteServer {
       id: c.id,
       name: c.name,
       icon: c.icon || null,
+      color: c.color || null,
     }))
 
     this.lastSoundboardData = {

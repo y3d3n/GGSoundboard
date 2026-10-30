@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Search, Upload, Square, PanelRight, PanelLeft, Plus, AudioLines, Folder, LayoutGrid } from 'lucide-vue-next'
+import { resolveColorHex } from '~/lib/colors'
 
 const sb = useSoundboard()
 const { state, visibleSounds, playing, previewing } = sb
@@ -11,6 +12,7 @@ const activeCollectionObj = computed(() =>
 )
 const title = computed(() => activeCollectionObj.value?.name ?? 'All sounds')
 const activeIcon = computed(() => activeCollectionObj.value?.icon ?? null)
+const activeColorHex = computed(() => resolveColorHex(activeCollectionObj.value?.color))
 const anyPlaying = computed(() => Object.keys(playing.value).length > 0 || Object.keys(previewing.value).length > 0)
 const minWidth = computed(() => ({ sm: 140, md: 172, lg: 210 })[state.settings.padSize])
 
@@ -42,10 +44,29 @@ defineExpose({ pick })
       </button>
 
       <div class="flex items-center gap-2 min-w-0">
-        <PadIcon v-if="activeIcon" :name="activeIcon" :size="15" class="shrink-0 text-accent" />
-        <Folder v-else-if="state.activeCollection !== 'all'" :size="15" class="shrink-0 text-ink-400" />
+        <PadIcon
+          v-if="activeIcon"
+          :name="activeIcon"
+          :size="15"
+          class="shrink-0"
+          :style="activeColorHex ? { color: activeColorHex } : undefined"
+          :class="!activeColorHex && 'text-accent'"
+        />
+        <Folder
+          v-else-if="state.activeCollection !== 'all'"
+          :size="15"
+          class="shrink-0"
+          :style="activeColorHex ? { color: activeColorHex } : undefined"
+          :class="!activeColorHex && 'text-ink-400'"
+        />
         <LayoutGrid v-else :size="15" class="shrink-0 text-ink-400" />
         <h1 class="min-w-0 truncate text-[13.5px] font-semibold tracking-tight text-ink-100">{{ title }}</h1>
+        <span
+          v-if="activeColorHex"
+          class="h-2 w-2 rounded-full shrink-0"
+          :style="{ backgroundColor: activeColorHex }"
+          :title="`Collection color: ${activeColorHex}`"
+        />
       </div>
       <span class="font-mono text-[11px] tabular-nums text-ink-500">{{ visibleSounds.length }}</span>
 

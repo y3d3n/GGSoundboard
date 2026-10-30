@@ -3,7 +3,7 @@ import { io, type Socket } from 'socket.io-client'
 import {
   Square, Search, Wifi, WifiOff, LogOut, Radio, Volume2, Repeat, Check, Shield, AlertTriangle
 } from 'lucide-vue-next'
-import { computePadTheme } from '~/lib/colors'
+import { computePadTheme, resolveColorHex } from '~/lib/colors'
 import type { RemoteSound, RemoteCollection } from '~/lib/types'
 
 interface PlayingVoice {
@@ -363,9 +363,22 @@ onBeforeUnmount(() => {
             :key="c.id"
             class="flex items-center gap-1.5 h-7 shrink-0 rounded-lg px-2.5 text-[12px] font-medium transition-colors"
             :class="activeCollection === c.id ? 'bg-white/[0.1] text-ink-100 font-semibold' : 'text-ink-400 hover:bg-white/[0.04] hover:text-ink-200'"
+            :style="activeCollection === c.id && c.color ? { backgroundColor: `${resolveColorHex(c.color)}22` } : undefined"
             @click="activeCollection = c.id"
           >
-            <PadIcon v-if="c.icon" :name="c.icon" :size="12" class="text-accent shrink-0" />
+            <span
+              v-if="c.color"
+              class="h-1.5 w-1.5 rounded-full shrink-0"
+              :style="{ backgroundColor: resolveColorHex(c.color) || '#8b93ff' }"
+            />
+            <PadIcon
+              v-if="c.icon"
+              :name="c.icon"
+              :size="12"
+              class="shrink-0"
+              :style="c.color ? { color: resolveColorHex(c.color) || undefined } : undefined"
+              :class="!c.color && 'text-accent'"
+            />
             <span>{{ c.name }} ({{ collectionCounts[c.id] || 0 }})</span>
           </button>
         </div>

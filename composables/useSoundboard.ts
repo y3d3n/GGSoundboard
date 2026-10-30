@@ -496,6 +496,7 @@ function syncRemoteSoundboard() {
       id: c.id,
       name: c.name,
       icon: c.icon || null,
+      color: c.color || null,
     })),
   }
   native.syncRemoteSoundboard(data).catch(() => {})
@@ -693,8 +694,8 @@ function assignHotkey(combo: string | null, owner: { soundId?: string; role?: 'p
 
 // ───────────────────────── collections ─────────────────────────
 
-function createCollection(name: string, icon?: string | null) {
-  const c = { id: uid(), name: name.trim() || 'Untitled', icon: icon || null }
+function createCollection(name: string, icon?: string | null, color?: string | null) {
+  const c: Collection = { id: uid(), name: name.trim() || 'Untitled', icon: icon || null, color: color || null }
   state.collections.push(c)
   return c
 }

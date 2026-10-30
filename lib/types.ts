@@ -33,6 +33,7 @@ export interface RemoteCollection {
   id: string
   name: string
   icon?: string | null
+  color?: string | null
 }
 
 export interface ConnectedDevice {
@@ -58,6 +59,7 @@ export interface Collection {
   id: string
   name: string
   icon?: string | null
+  color?: string | null
 }
 
 export interface Settings {
