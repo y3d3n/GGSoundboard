@@ -8,13 +8,6 @@ const { ui } = useUi()
 
 const copied = ref(false)
 
-const halfUrl = computed(() => {
-  const url = state.remoteUrl || ''
-  if (!url) return ''
-  const halfLen = Math.ceil(url.length / 2)
-  return url.slice(0, halfLen) + '…'
-})
-
 async function copyUrl() {
   if (!state.remoteUrl) return
   try {
@@ -110,7 +103,7 @@ function fmtTimeAgo(ts: number) {
                 @click="copyUrl"
               >
                 <span class="truncate">
-                  {{ copied ? 'Copied!' : halfUrl }}
+                  {{ copied ? 'Copied!' : state.remoteUrl }}
                 </span>
                 <Check v-if="copied" :size="12" class="shrink-0 text-emerald-400" />
               </button>
