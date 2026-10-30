@@ -8,6 +8,13 @@ const { ui } = useUi()
 
 const copied = ref(false)
 
+const halfUrl = computed(() => {
+  const url = state.remoteUrl || ''
+  if (!url) return ''
+  const halfLen = Math.ceil(url.length / 2)
+  return url.slice(0, halfLen) + '…'
+})
+
 async function copyUrl() {
   if (!state.remoteUrl) return
   try {
@@ -45,7 +52,7 @@ function fmtTimeAgo(ts: number) {
 </script>
 
 <template>
-  <UiModal :open="ui.remoteOpen" title="Remote Controller" width="max-w-[560px]" @close="ui.remoteOpen = false">
+  <UiModal :open="ui.remoteOpen" title="Remote Controller" width="max-w-[580px]" @close="ui.remoteOpen = false">
     <div class="space-y-5 p-5">
       <!-- Status Card -->
       <div class="flex items-center justify-between rounded-xl border border-white/[0.08] bg-white/[0.02] p-4">
@@ -78,29 +85,32 @@ function fmtTimeAgo(ts: number) {
       <!-- Connection Details (When Running) -->
       <div v-if="state.remoteRunning" class="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <!-- URL & QR Code -->
-        <div class="space-y-3 rounded-xl border border-white/[0.08] bg-white/[0.02] p-4">
+        <div class="space-y-3 rounded-xl border border-white/[0.08] bg-white/[0.02] p-4 flex flex-col justify-between">
           <label class="label mb-0">Scan or Visit URL</label>
           <div class="flex flex-col items-center justify-center gap-3 py-1">
-            <div class="overflow-hidden rounded-xl border border-white/[0.1] bg-ink-950 p-2 shadow-inner">
+            <div class="overflow-hidden rounded-xl border border-white/[0.1] bg-ink-950 p-2.5 shadow-inner">
               <img
                 v-if="state.remoteQr"
                 :src="state.remoteQr"
                 alt="QR Code"
-                class="h-32 w-32 rounded-lg"
+                class="h-44 w-44 rounded-lg"
               >
-              <div v-else class="flex h-32 w-32 items-center justify-center text-xs text-ink-500">
+              <div v-else class="flex h-44 w-44 items-center justify-center text-xs text-ink-500">
                 Generating…
               </div>
             </div>
             <div class="flex w-full items-center gap-1.5">
-              <code class="flex-1 truncate rounded-lg bg-white/[0.04] px-2 py-1.5 font-mono text-[11px] text-ink-200" :title="state.remoteUrl">
-                {{ state.remoteUrl }}
+              <code
+                class="flex-1 truncate rounded-lg bg-white/[0.04] px-2.5 py-1.5 font-mono text-[11px] text-ink-200"
+                :title="`Full URL: ${state.remoteUrl}`"
+              >
+                {{ halfUrl }}
               </code>
-              <button class="btn-outline h-7 px-2" title="Copy URL" @click="copyUrl">
+              <button class="btn-outline h-7 px-2" title="Copy full URL" @click="copyUrl">
                 <Check v-if="copied" :size="13" class="text-emerald-400" />
                 <Copy v-else :size="13" />
               </button>
-              <button class="btn-outline h-7 px-2" title="Open in browser" @click="openUrl">
+              <button class="btn-outline h-7 px-2" title="Open full URL in browser" @click="openUrl">
                 <ExternalLink :size="13" />
               </button>
             </div>
@@ -121,11 +131,11 @@ function fmtTimeAgo(ts: number) {
               </button>
             </div>
             <p class="mt-1 text-[11.5px] text-ink-400">Enter this PIN on your remote device to pair:</p>
-            <div class="my-4 flex items-center justify-center gap-2">
+            <div class="my-6 flex items-center justify-center gap-2">
               <span
                 v-for="(digit, idx) in (state.remotePin || '4829').split('')"
                 :key="idx"
-                class="flex h-11 w-10 items-center justify-center rounded-lg border border-accent/40 bg-accent-soft font-mono text-xl font-bold text-ink-100 shadow-sm"
+                class="flex h-12 w-11 items-center justify-center rounded-xl border border-accent/40 bg-accent-soft font-mono text-2xl font-bold text-ink-100 shadow-sm"
               >
                 {{ digit }}
               </span>

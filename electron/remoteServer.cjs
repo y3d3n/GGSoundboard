@@ -217,7 +217,7 @@ class RemoteServer {
     const url = `http://${ip}:${this.port}/remote`
     let qrDataUrl = ''
     try {
-      qrDataUrl = await QRCode.toDataURL(url, { margin: 1, width: 200, color: { dark: '#ffffff', light: '#111114' } })
+      qrDataUrl = await QRCode.toDataURL(url, { margin: 1, width: 300, color: { dark: '#ffffff', light: '#111114' } })
     } catch {
       // ignore qr error
     }
