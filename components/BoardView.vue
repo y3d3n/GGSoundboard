@@ -6,6 +6,7 @@ const sb = useSoundboard()
 const updater = useUpdater()
 const { state, visibleSounds, playing, previewing } = sb
 const isMac = sb.platform === 'mac' && !!sb.native
+const hasRightOverlay = !isMac && !!sb.native
 const fileInput = ref<HTMLInputElement | null>(null)
 
 const activeCollectionObj = computed(() =>
@@ -33,7 +34,10 @@ defineExpose({ pick })
     <!-- Toolbar -->
     <header
       class="drag flex h-[52px] shrink-0 items-center gap-3 border-b border-white/[0.06]"
-      :class="[!state.settings.sidebarOpen && isMac ? 'pl-[84px] pr-5' : 'px-5']"
+      :class="[
+        !state.settings.sidebarOpen && isMac ? 'pl-[84px]' : 'pl-5',
+        !state.settings.mixerOpen && hasRightOverlay ? 'pr-[144px]' : 'pr-5',
+      ]"
     >
       <button
         class="no-drag icon-btn h-[30px] w-[30px] -ml-1 text-ink-400 hover:text-ink-100"
@@ -102,16 +106,16 @@ defineExpose({ pick })
         </button>
       </div>
 
-      <button class="btn-outline h-[30px]" :disabled="!anyPlaying" title="Stop all sounds" @click="sb.stopAll()">
+      <button class="no-drag btn-outline h-[30px]" :disabled="!anyPlaying" title="Stop all sounds" @click="sb.stopAll()">
         <Square :size="12" fill="currentColor" />
         Stop
         <UiKbd :combo="state.settings.stopAllKey" dim />
       </button>
-      <button class="btn-primary h-[30px]" @click="pick">
+      <button class="no-drag btn-primary h-[30px]" @click="pick">
         <Upload :size="14" /> Import
       </button>
       <button
-        class="icon-btn h-[30px] w-[30px]"
+        class="no-drag icon-btn h-[30px] w-[30px]"
         :class="state.settings.mixerOpen && 'bg-white/[0.06] text-ink-100'"
         title="Toggle mixer"
         @click="state.settings.mixerOpen = !state.settings.mixerOpen"

@@ -5,6 +5,8 @@ const sb = useSoundboard()
 const { state, levels, routingStatus, virtualMicName } = sb
 const { ui } = useUi()
 const s = computed(() => state.settings)
+const isMac = sb.platform === 'mac' && !!sb.native
+const hasRightOverlay = !isMac && !!sb.native
 
 const sortedOutputs = computed(() => {
   const list = state.outputs.filter((d) => !d.isDefault)
@@ -50,9 +52,12 @@ async function refresh() {
 
 <template>
   <aside class="flex h-full w-[320px] shrink-0 flex-col border-l border-white/[0.06] bg-ink-900/60">
-    <header class="drag flex h-[52px] shrink-0 items-center justify-between pl-5 pr-3">
+    <header
+      class="drag flex h-[52px] shrink-0 items-center justify-between pl-5"
+      :class="hasRightOverlay ? 'pr-[144px]' : 'pr-3'"
+    >
       <h2 class="text-[13px] font-semibold tracking-tight text-ink-100">Mixer</h2>
-      <button class="icon-btn h-7 w-7" title="Refresh devices" @click="refresh">
+      <button class="no-drag icon-btn h-7 w-7" title="Refresh devices" @click="refresh">
         <RefreshCw :size="14" :class="refreshing && 'animate-spin'" />
       </button>
     </header>
