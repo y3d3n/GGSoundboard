@@ -26,7 +26,7 @@ interface UpdaterState {
 
 const state = reactive<UpdaterState>({
   status: 'idle',
-  currentVersion: '1.0.1',
+  currentVersion: '1.2.0',
   availableVersion: null,
   releaseName: null,
   releaseNotes: null,
