@@ -203,6 +203,63 @@ npm run dev:web
 
 ---
 
+## 🔄 Automatic Application Updates
+
+GGSoundboard includes a production-grade automatic update system powered by **`electron-updater`**, **GitHub Releases**, and **GitHub Actions**.
+
+### Features
+- **Background Checks**: Automatically checks for new versions on launch (after 8s) and every 4 hours while running.
+- **Manual Checks**: Users can trigger an update check anytime via:
+  - Application menu (`GGSoundboard → Check for Updates…` on macOS, `Help → Check for Updates…` on Windows/Linux)
+  - Settings Modal (`Settings → Software Updates`)
+  - About Modal (`About GGSoundboard → Check for Updates`)
+- **Interactive UI**: Modal presents version diff (`v1.0.1` → `v1.0.2`), release notes, download progress bar (speed, MB transferred, percentage), and restart options.
+- **Playback Safe**: Audio playback is never interrupted by updates. Users choose when to restart and apply updates.
+- **Zero Data Loss**: All sounds, custom categories, icons, colors, hotkeys, and preferences reside in the OS `userData` directory (`~/Library/Application Support/GGSoundboard` on macOS, `%APPDATA%\GGSoundboard` on Windows), completely isolated from the application binary directory.
+- **Development Safe**: Automatic updates are automatically suppressed in development mode (`!app.isPackaged`).
+
+---
+
+## 🚀 Publishing Updates (CI/CD)
+
+### 1. Update Version in `package.json`
+`package.json` is the single source of truth for semantic versioning (`MAJOR.MINOR.PATCH`):
+```bash
+# Example: Bumping to v1.0.2
+npm version 1.0.2 --no-git-tag-version
+```
+
+### 2. Commit and Tag
+```bash
+git add package.json
+git commit -m "chore: release v1.0.2"
+git tag v1.0.2
+git push origin main
+git push origin v1.0.2
+```
+
+### 3. Automated GitHub Release
+When a tag matching `v*` is pushed:
+1. GitHub Actions runs independent builds on `macos-latest`, `windows-latest`, and `ubuntu-latest`.
+2. Compiles DMG, ZIP, NSIS EXE, AppImage, and all updater manifests (`latest-mac.yml`, `latest.yml`, `latest-linux.yml`).
+3. Only after all platform builds succeed, a single consolidated GitHub Release is published automatically.
+4. Installed desktop apps detect the release and offer a seamless one-click update.
+
+### 4. Optional Code Signing Secrets
+Unsigned builds work immediately. For official code signing and Apple Notarization, configure these secrets in **GitHub Repository → Settings → Secrets and variables → Actions**:
+
+| Secret Name | Platform | Description |
+| :--- | :--- | :--- |
+| `CSC_LINK` | macOS | Base64-encoded Apple Developer `.p12` certificate |
+| `CSC_KEY_PASSWORD` | macOS | Password for the `.p12` certificate |
+| `APPLE_ID` | macOS | Apple Developer account email |
+| `APPLE_APP_SPECIFIC_PASSWORD` | macOS | App-specific password generated on appleid.apple.com |
+| `APPLE_TEAM_ID` | macOS | 10-character Apple Developer Team ID |
+| `WIN_CSC_LINK` | Windows | Base64-encoded Windows code signing certificate (`.pfx`) |
+| `WIN_CSC_KEY_PASSWORD` | Windows | Password for the Windows `.pfx` certificate |
+
+---
+
 ## 👨‍💻 Author & Credits
 
 Developed with ❤️ by **Yeden Sherpa**

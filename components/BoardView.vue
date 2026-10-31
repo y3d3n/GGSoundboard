@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { Search, Upload, Square, PanelRight, PanelLeft, Plus, AudioLines, Folder, LayoutGrid } from 'lucide-vue-next'
+import { Search, Upload, Square, PanelRight, PanelLeft, Plus, AudioLines, Folder, LayoutGrid, Sparkles } from 'lucide-vue-next'
 import { resolveColorHex } from '~/lib/colors'
 
 const sb = useSoundboard()
+const updater = useUpdater()
 const { state, visibleSounds, playing, previewing } = sb
 const isMac = sb.platform === 'mac' && !!sb.native
 const fileInput = ref<HTMLInputElement | null>(null)
@@ -69,6 +70,18 @@ defineExpose({ pick })
         />
       </div>
       <span class="font-mono text-[11px] tabular-nums text-ink-500">{{ visibleSounds.length }}</span>
+
+      <!-- New Update Available Pill -->
+      <button
+        v-if="updater.hasNewUpdate.value"
+        type="button"
+        class="no-drag flex items-center gap-1.5 rounded-full border border-accent/40 bg-accent/15 px-2.5 py-1 text-[11.5px] font-medium text-accent transition-all hover:bg-accent/25 hover:border-accent/60"
+        title="Software update is available"
+        @click="updater.openModal"
+      >
+        <Sparkles :size="12" />
+        <span>v{{ updater.state.availableVersion }} available</span>
+      </button>
 
       <div class="no-drag relative ml-auto w-[240px]">
         <Search :size="14" class="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-ink-500" />

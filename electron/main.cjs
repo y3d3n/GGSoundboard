@@ -16,6 +16,7 @@ const path = require('node:path')
 const fs = require('node:fs/promises')
 const { pathToFileURL } = require('node:url')
 const { remoteServer } = require('./remoteServer.cjs')
+const updater = require('./updater.cjs')
 const pkg = require('../package.json')
 
 const APP_NAME = pkg.productName || 'Soundboard'
@@ -87,6 +88,9 @@ async function createWindow() {
   })
   win.once('ready-to-show', () => win?.show())
   win.on('closed', () => { win = null })
+
+  // Initialize auto-updater with the main window
+  updater.initUpdater(win)
 
   // Open external links in the default browser.
   win.webContents.setWindowOpenHandler(({ url }) => {
@@ -206,6 +210,12 @@ function setupIpc() {
   ipcMain.handle('remote:playing', async (_e, playing) => {
     return remoteServer.broadcastPlaying(playing)
   })
+
+  // ── Auto Updater IPC ──
+  ipcMain.handle('updater:check', async () => updater.checkForUpdates(true))
+  ipcMain.handle('updater:download', async () => updater.downloadUpdate())
+  ipcMain.handle('updater:install', () => updater.installUpdate())
+  ipcMain.handle('app:version', () => app.getVersion())
 }
 
 function setupAboutPanel() {
@@ -233,6 +243,10 @@ function setupMenu() {
               {
                 label: `About ${APP_NAME}`,
                 role: 'about',
+              },
+              {
+                label: 'Check for Updates…',
+                click: () => updater.checkForUpdates(true),
               },
               { type: 'separator' },
               {
@@ -322,6 +336,10 @@ function setupMenu() {
               {
                 label: `About ${APP_NAME}`,
                 role: 'about',
+              },
+              {
+                label: 'Check for Updates…',
+                click: () => updater.checkForUpdates(true),
               },
               { type: 'separator' },
             ]

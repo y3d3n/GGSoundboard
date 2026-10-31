@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { TriangleAlert, FolderOpen } from 'lucide-vue-next'
+import { TriangleAlert, FolderOpen, RefreshCw, Sparkles } from 'lucide-vue-next'
 import { formatCombo, isUnsafeGlobal } from '~/lib/hotkeys'
 import type { Conflict } from '~/composables/useSoundboard'
 
 const sb = useSoundboard()
 const { ui } = useUi()
+const updater = useUpdater()
 const s = computed(() => sb.state.settings)
 const libraryPath = ref<string | null>(null)
 const pending = ref<{ combo: string; role: 'ptt' | 'stopAll'; conflict: Conflict } | null>(null)
@@ -156,6 +157,41 @@ const failedNames = computed(() =>
           <p class="text-[11.5px] text-ink-500">Sounds and settings are stored locally on this computer.</p>
         </template>
         <p v-else class="text-[11.5px] text-ink-500">Running in a browser — sounds and settings are stored in this browser’s IndexedDB.</p>
+      </section>
+
+      <!-- Software Updates -->
+      <section v-if="sb.native" class="space-y-3 p-5">
+        <h3 class="label mb-0">Software Updates</h3>
+        <div class="flex items-center justify-between gap-4">
+          <div>
+            <p class="text-[13px] text-ink-200">
+              <span v-if="updater.hasNewUpdate.value" class="text-accent font-medium">Update available: v{{ updater.state.availableVersion }}</span>
+              <span v-else>GGSoundboard v{{ updater.state.currentVersion }}</span>
+            </p>
+            <p class="text-[11.5px] text-ink-500">
+              <span v-if="updater.state.status === 'checking'">Checking for new releases…</span>
+              <span v-else-if="updater.state.status === 'not-available'">You are running the latest version</span>
+              <span v-else-if="updater.state.status === 'error'">{{ updater.state.errorMessage }}</span>
+              <span v-else>Automatic updates are enabled via GitHub Releases</span>
+            </p>
+          </div>
+          <button
+            v-if="updater.hasNewUpdate.value"
+            class="btn-primary h-7 px-2.5 text-[12px] gap-1.5"
+            @click="updater.openModal"
+          >
+            <Sparkles :size="12" /> View Update
+          </button>
+          <button
+            v-else
+            class="btn-outline h-7 px-2.5 text-[12px] gap-1.5"
+            :disabled="updater.state.status === 'checking'"
+            @click="updater.checkForUpdates(true)"
+          >
+            <RefreshCw :size="12" :class="updater.state.status === 'checking' && 'animate-spin'" />
+            Check for Updates
+          </button>
+        </div>
       </section>
     </div>
     <template #footer>

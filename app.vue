@@ -4,6 +4,7 @@ import { Upload, Power } from 'lucide-vue-next'
 const sb = useSoundboard()
 const { state } = sb
 const { ui } = useUi()
+const updater = useUpdater()
 useKeyboard()
 
 const isRemoteMode = ref(
@@ -43,6 +44,7 @@ function onDrop(e: DragEvent) {
 onMounted(async () => {
   if (!isRemoteMode.value) {
     await sb.init()
+    void updater.init()
     if (!state.settings.onboarded && sb.routingStatus.value !== 'ok') ui.setupOpen = true
     if (sb.native?.onMenuAction) {
       sb.native.onMenuAction((action: string) => {
@@ -126,6 +128,7 @@ onMounted(async () => {
     <SetupGuide />
     <RemoteModal />
     <AboutModal />
+    <UpdateModal />
     <ConfirmDialog />
     <PadContextMenu />
     <ToastStack />

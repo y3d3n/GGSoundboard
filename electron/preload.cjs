@@ -45,4 +45,14 @@ contextBridge.exposeInMainWorld('soundboardNative', {
     ipcRenderer.on('menu:action', listener)
     return () => ipcRenderer.removeListener('menu:action', listener)
   },
+  // Auto Updater Bridge
+  checkForUpdates: () => ipcRenderer.invoke('updater:check'),
+  downloadUpdate: () => ipcRenderer.invoke('updater:download'),
+  installUpdate: () => ipcRenderer.invoke('updater:install'),
+  getAppVersion: () => ipcRenderer.invoke('app:version'),
+  onUpdaterStatus: (cb) => {
+    const listener = (_e, status) => cb(status)
+    ipcRenderer.on('updater:status', listener)
+    return () => ipcRenderer.removeListener('updater:status', listener)
+  },
 })

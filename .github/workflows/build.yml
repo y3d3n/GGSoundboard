@@ -12,20 +12,10 @@ permissions:
   contents: write
 
 jobs:
-  build:
-    name: Build (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: macos-latest
-            platform: mac
-          - os: windows-latest
-            platform: win
-          - os: ubuntu-latest
-            platform: linux
-
+  # ── 1. Build macOS (DMG, ZIP & latest-mac.yml) ──
+  build-macos:
+    name: Build (macOS)
+    runs-on: macos-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -44,35 +34,148 @@ jobs:
         env:
           NUXT_TELEMETRY_DISABLED: 1
 
-      - name: Build Electron app (${{ matrix.platform }})
-        run: npx electron-builder --${{ matrix.platform }}
+      - name: Build Electron app (macOS)
+        run: npx electron-builder --mac
         env:
-          # Allow ad-hoc/unsigned build on macOS and Windows without requiring paid developer certificates
-          CSC_IDENTITY_AUTO_DISCOVERY: false
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Apple Developer Code Signing & Notarization (optional)
+          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          # If no certificate is provided, fall back to ad-hoc unsigned build
+          CSC_IDENTITY_AUTO_DISCOVERY: ${{ secrets.CSC_LINK != '' }}
 
-      - name: Upload build artifacts
+      - name: Upload macOS artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: GGSoundboard-${{ matrix.platform }}
+          name: macos-artifacts
           path: |
             release/*.dmg
             release/*.zip
-            release/*.exe
-            release/*.AppImage
-            release/*.deb
+            release/latest-mac.yml
+            release/*.blockmap
           if-no-files-found: warn
 
-      - name: Publish GitHub Release (on tag)
-        if: startsWith(github.ref, 'refs/tags/v')
+  # ── 2. Build Windows (NSIS Installer & latest.yml) ──
+  build-windows:
+    name: Build (Windows)
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Nuxt static frontend
+        run: npm run generate
+        env:
+          NUXT_TELEMETRY_DISABLED: 1
+
+      - name: Build Electron app (Windows)
+        run: npx electron-builder --win
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Windows Code Signing (optional)
+          WIN_CSC_LINK: ${{ secrets.WIN_CSC_LINK }}
+          WIN_CSC_KEY_PASSWORD: ${{ secrets.WIN_CSC_KEY_PASSWORD }}
+          CSC_IDENTITY_AUTO_DISCOVERY: ${{ secrets.WIN_CSC_LINK != '' }}
+
+      - name: Upload Windows artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-artifacts
+          path: |
+            release/*.exe
+            release/latest.yml
+            release/*.blockmap
+          if-no-files-found: warn
+
+  # ── 3. Build Linux (AppImage & deb) ──
+  build-linux:
+    name: Build (Linux)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Nuxt static frontend
+        run: npm run generate
+        env:
+          NUXT_TELEMETRY_DISABLED: 1
+
+      - name: Build Electron app (Linux)
+        run: npx electron-builder --linux
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      - name: Upload Linux artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-artifacts
+          path: |
+            release/*.AppImage
+            release/*.deb
+            release/latest-linux.yml
+            release/*.blockmap
+          if-no-files-found: warn
+
+  # ── 4. Publish Consolidated GitHub Release (on tag) ──
+  publish-release:
+    name: Publish Release
+    needs: [build-macos, build-windows, build-linux]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download macOS artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-artifacts
+          path: dist-release
+
+      - name: Download Windows artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-artifacts
+          path: dist-release
+
+      - name: Download Linux artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-artifacts
+          path: dist-release
+
+      - name: Display downloaded release files
+        run: ls -la dist-release
+
+      - name: Publish Consolidated GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            release/*.dmg
-            release/*.zip
-            release/*.exe
-            release/*.AppImage
-            release/*.deb
+            dist-release/*
           draft: false
           prerelease: false
           generate_release_notes: true

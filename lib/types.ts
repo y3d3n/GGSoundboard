@@ -131,6 +131,34 @@ export const DEFAULT_SETTINGS: Settings = {
   exclusivePlayback: true,
 }
 
+export interface UpdateInfo {
+  version: string
+  currentVersion?: string
+  releaseDate?: string
+  releaseNotes?: string | { note: string }[] | null
+  releaseName?: string
+}
+
+export interface UpdateProgress {
+  percent: number
+  bytesPerSecond: number
+  transferred: number
+  total: number
+}
+
+export interface UpdateStatusEvent {
+  event:
+    | 'checking-for-update'
+    | 'update-available'
+    | 'update-not-available'
+    | 'download-progress'
+    | 'update-downloaded'
+    | 'update-error'
+  info?: UpdateInfo
+  progress?: UpdateProgress
+  error?: { message: string; raw?: string }
+}
+
 /** Bridge exposed by electron/preload.cjs (undefined when running in a browser). */
 export interface NativeBridge {
   isElectron: true
@@ -157,6 +185,12 @@ export interface NativeBridge {
   onRemoteCommand(cb: (cmd: { type: string; payload?: any }) => void): () => void
   onRemoteDevices(cb: (devices: ConnectedDevice[]) => void): () => void
   onMenuAction?(cb: (action: string) => void): () => void
+  // Auto Updater
+  checkForUpdates?(): Promise<any>
+  downloadUpdate?(): Promise<{ success: boolean; reason?: string; error?: string }>
+  installUpdate?(): { success: boolean; reason?: string }
+  getAppVersion?(): Promise<string>
+  onUpdaterStatus?(cb: (status: UpdateStatusEvent) => void): () => void
 }
 
 declare global {

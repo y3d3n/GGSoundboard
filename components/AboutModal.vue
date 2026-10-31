@@ -12,10 +12,13 @@ import {
   Settings,
   Smartphone,
   Sparkles,
+  RefreshCw,
+  ArrowUpCircle,
 } from 'lucide-vue-next'
 
 const sb = useSoundboard()
 const { ui } = useUi()
+const updater = useUpdater()
 const { state, routingStatus, virtualDriverInstalled, virtualMicName } = sb
 
 const isWin = sb.platform === 'windows'
@@ -64,7 +67,7 @@ function revealLibrary() {
           <div class="flex items-center gap-2">
             <h1 class="text-[17px] font-semibold tracking-tight text-ink-100">GGSoundboard</h1>
             <span class="rounded-full border border-white/10 bg-white/[0.06] px-2 py-0.5 font-mono text-[11px] font-medium text-ink-300">
-              v1.0.1
+              v{{ updater.state.currentVersion }}
             </span>
             <span v-if="sb.native" class="rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-medium text-accent">
               Desktop Native
@@ -129,6 +132,60 @@ function revealLibrary() {
           <p class="text-[11.5px] text-ink-500">
             {{ state.remoteDevices.length }} {{ state.remoteDevices.length === 1 ? 'device' : 'devices' }} connected
           </p>
+        </div>
+      </div>
+
+      <!-- Software Updates Card -->
+      <div v-if="sb.native" class="rounded-xl border border-white/[0.08] bg-white/[0.025] p-3.5 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3 min-w-0">
+          <div
+            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border text-ink-300"
+            :class="[
+              updater.hasNewUpdate.value
+                ? 'border-accent/40 bg-accent/15 text-accent'
+                : 'border-white/[0.08] bg-white/[0.04]',
+            ]"
+          >
+            <ArrowUpCircle v-if="updater.hasNewUpdate.value" :size="18" />
+            <RefreshCw v-else :size="16" :class="updater.state.status === 'checking' && 'animate-spin text-accent'" />
+          </div>
+          <div class="min-w-0">
+            <div class="flex items-center gap-2">
+              <span class="text-[13px] font-medium text-ink-200">
+                <span v-if="updater.state.status === 'checking'">Checking for updates…</span>
+                <span v-else-if="updater.state.status === 'downloading'">Downloading update ({{ updater.state.progress?.percent ?? 0 }}%)…</span>
+                <span v-else-if="updater.state.status === 'downloaded'">Update v{{ updater.state.availableVersion }} ready to install</span>
+                <span v-else-if="updater.state.status === 'available'">Update available: v{{ updater.state.availableVersion }}</span>
+                <span v-else-if="updater.state.status === 'error'">Update check failed</span>
+                <span v-else-if="updater.state.status === 'not-available'">GGSoundboard is up to date</span>
+                <span v-else>Automatic updates active</span>
+              </span>
+            </div>
+            <p class="text-[11px] text-ink-500 mt-0.5 truncate">
+              <span v-if="updater.state.status === 'error'">{{ updater.state.errorMessage }}</span>
+              <span v-else-if="updater.hasNewUpdate.value">Click to view details and install</span>
+              <span v-else>Current version v{{ updater.state.currentVersion }} &bull; GitHub Releases</span>
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 shrink-0">
+          <button
+            v-if="updater.hasNewUpdate.value"
+            class="btn-primary text-[12px] h-8 px-3 gap-1.5"
+            @click="updater.openModal"
+          >
+            <Sparkles :size="13" /> View Update
+          </button>
+          <button
+            v-else
+            class="btn-outline text-[12px] h-8 px-3 gap-1.5"
+            :disabled="updater.state.status === 'checking'"
+            @click="updater.checkForUpdates(true)"
+          >
+            <RefreshCw :size="12" :class="updater.state.status === 'checking' && 'animate-spin'" />
+            Check for Updates
+          </button>
         </div>
       </div>
 
